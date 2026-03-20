@@ -1,8 +1,12 @@
 # Subsonic / Navidrome API
 
-Monochrome ships an optional **Subsonic-compatible REST API** server that lets
-you use any Subsonic or Navidrome-compatible music client to browse and stream
-the same music available through the Monochrome web interface.
+Monochrome ships a **Subsonic-compatible REST API** server that lets you use
+any Subsonic or Navidrome-compatible music client to browse and stream the same
+music available through the Monochrome web interface.
+
+The Subsonic API server is **bundled into the main Monochrome Docker image** and
+starts automatically alongside the web UI. No extra containers or profiles are
+needed.
 
 ## Supported Clients
 
@@ -17,28 +21,34 @@ or the [OpenSubsonic](https://opensubsonic.netlify.app/) extension should work, 
 - **Navidrome Web UI** (configure as a Subsonic server)
 - **Rhythmbox** / **Clementine** (Linux desktop)
 
-## Enabling the API
+## Pre-built Images
 
-The Subsonic server is an **optional** Docker Compose service that can be
-enabled with the `subsonic` profile.
+Images are automatically built and published to GitHub Container Registry on
+every push to `main` and on every release:
 
-### Quick Start
+| Image | Description |
+|-------|-------------|
+| `ghcr.io/benjithatfoxguy/monochrome:latest` | Main image — web UI **+ bundled Subsonic API** |
+| `ghcr.io/benjithatfoxguy/monochrome-subsonic:latest` | Standalone Subsonic API only (no web UI) |
+
+## Quick Start
 
 ```bash
-# Start Monochrome + Subsonic API
-docker compose --profile subsonic up -d
+# The standard Monochrome compose file already exposes the Subsonic API.
+docker compose up -d
 ```
 
-The Subsonic API is now available at **http://localhost:4533/rest/**.
+The Subsonic API is available at:
+- **Direct:** `http://localhost:4533/rest/`
+- **Via nginx proxy:** `http://localhost:3000/rest/` (same port as the web UI)
 
-### Configuration
+## Configuration
 
-All settings are controlled via environment variables (`.env` file or shell
-exports).
+All settings are controlled via environment variables (`.env` file or shell exports).
 
 | Variable                   | Default               | Description                                      |
-| -------------------------- | --------------------- | ------------------------------------------------ |
-| `SUBSONIC_PORT`            | `4533`                | Host port the API listens on                     |
+|----------------------------|-----------------------|--------------------------------------------------|
+| `SUBSONIC_PORT`            | `4533`                | Internal port the Subsonic server listens on     |
 | `SUBSONIC_USER`            | `admin`               | Subsonic username                                |
 | `SUBSONIC_PASS`            | `admin`               | Subsonic password                                |
 | `MONOCHROME_API_INSTANCES` | _(built-in defaults)_ | Comma-separated list of Monochrome API base URLs |
@@ -56,7 +66,7 @@ SUBSONIC_PASS=a-very-strong-password
 ### Running alongside PocketBase
 
 ```bash
-docker compose --profile subsonic --profile pocketbase up -d
+docker compose --profile pocketbase up -d
 ```
 
 ## Client Configuration
@@ -64,15 +74,34 @@ docker compose --profile subsonic --profile pocketbase up -d
 Point your Subsonic client at:
 
 | Field    | Value                        |
-| -------- | ---------------------------- |
-| Server   | `http://<your-host>:4533`    |
+|----------|------------------------------|
+| Server   | `http://<your-host>:3000` (via nginx proxy) or `http://<your-host>:4533` (direct) |
 | Username | _(value of `SUBSONIC_USER`)_ |
 | Password | _(value of `SUBSONIC_PASS`)_ |
+
+## Standalone Subsonic-Only Container
+
+If you only want the Subsonic API without the web UI (e.g. to run it separately),
+use the standalone image:
+
+```bash
+docker run -d \
+  -e SUBSONIC_USER=myuser \
+  -e SUBSONIC_PASS=secret \
+  -p 4533:4533 \
+  ghcr.io/benjithatfoxguy/monochrome-subsonic:latest
+```
+
+Or with Docker Compose using the `subsonic` profile (still builds from source):
+
+```bash
+docker compose --profile subsonic up -d
+```
 
 ## Supported Endpoints
 
 | Endpoint              | Notes                                                |
-| --------------------- | ---------------------------------------------------- |
+|-----------------------|------------------------------------------------------|
 | `ping`                | Connectivity check                                   |
 | `getLicense`          | Always returns valid                                 |
 | `getMusicFolders`     | Returns a single virtual "Monochrome / TIDAL" folder |

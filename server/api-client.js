@@ -24,7 +24,12 @@ export class MonochromeApiClient {
         this.cache = new Map();
         this.cacheTtl = 1000 * 60 * 30; // 30 minutes
 
-        setInterval(() => this._pruneCache(), 1000 * 60 * 5);
+        this._pruneTimer = setInterval(() => this._pruneCache(), 1000 * 60 * 5);
+    }
+
+    /** Stop the background cache-pruning timer (useful in tests or when recreating the client). */
+    destroy() {
+        clearInterval(this._pruneTimer);
     }
 
     // -------------------------------------------------------------------------
@@ -267,8 +272,8 @@ export class MonochromeApiClient {
             // JSON manifest
             const parsed = JSON.parse(atob(manifest));
             if (parsed.urls?.[0]) return parsed.urls[0];
-        } catch {
-            // ignore
+        } catch (err) {
+            console.warn('[MonochromeApiClient] Failed to parse manifest as JSON:', err.message);
         }
 
         try {
@@ -277,8 +282,8 @@ export class MonochromeApiClient {
             const lines = decoded.split('\n');
             const urlLine = lines.find((l) => l.trim().startsWith('http'));
             if (urlLine) return urlLine.trim();
-        } catch {
-            // ignore
+        } catch (err) {
+            console.warn('[MonochromeApiClient] Failed to parse manifest as DASH/HLS:', err.message);
         }
 
         return null;

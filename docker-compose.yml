@@ -1,5 +1,5 @@
 services:
-    # Production frontend -- always runs
+    # Production frontend + bundled Subsonic API -- always runs
     monochrome:
         build:
             context: .
@@ -10,8 +10,14 @@ services:
                 - POCKETBASE_URL=${POCKETBASE_URL}
                 - SESSION_MAX_AGE=${SESSION_MAX_AGE}
         container_name: monochrome
+        environment:
+            SUBSONIC_PORT: '4533'
+            SUBSONIC_USER: ${SUBSONIC_USER:-admin}
+            SUBSONIC_PASS: ${SUBSONIC_PASS:-admin}
+            MONOCHROME_API_INSTANCES: ${MONOCHROME_API_INSTANCES:-}
         ports:
             - '${MONOCHROME_PORT:-3000}:4173'
+            - '${SUBSONIC_PORT:-4533}:4533'
         restart: unless-stopped
         networks:
             - monochrome-network
@@ -20,7 +26,7 @@ services:
             interval: 30s
             timeout: 3s
             retries: 3
-            start_period: 5s
+            start_period: 10s
 
     # PocketBase backend -- only starts with: docker compose --profile pocketbase up -d
     pocketbase:

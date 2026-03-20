@@ -26,6 +26,22 @@ const QUALITY_MAP = {
     64: 'LOW',
 };
 
+// Nominal bitrate reported to Subsonic clients per quality tier
+const BITRATE_BY_QUALITY = {
+    HI_RES_LOSSLESS: 9999,
+    HIGH: 320,
+    LOW: 96,
+};
+
+/** Fisher-Yates shuffle (in-place, returns the array). */
+function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
 export class SubsonicHandler {
     /**
      * @param {object} opts
@@ -342,11 +358,13 @@ export class SubsonicHandler {
         const count = Math.min(parseInt(params.count ?? '10', 10), 500);
         const query = params.genre ?? '';
 
-        // Use a varied search to get "random-ish" tracks
+        // Note: The Monochrome API doesn't expose a random-track endpoint, so
+        // we approximate randomness by picking a random common search term and
+        // then shuffling the results with a Fisher-Yates shuffle.
         const queries = ['a', 'e', 'i', 'o', 'the', 'love', 'night', 'time', 'day', 'life'];
         const q = queries[Math.floor(Math.random() * queries.length)];
-        const { items } = await this.api.searchTracks(query || q, 0, count);
-        const shuffled = items.sort(() => Math.random() - 0.5).slice(0, count);
+        const { items } = await this.api.searchTracks(query || q, 0, count * 2);
+        const shuffled = shuffleArray([...items]).slice(0, count);
 
         return this._respond(params, { randomSongs: { song: shuffled.map((t) => this._buildSong(t)) } });
     }
@@ -549,7 +567,7 @@ export class SubsonicHandler {
             contentType: 'audio/flac',
             suffix: 'flac',
             duration: Math.round(track.duration ?? 0),
-            bitRate: track.audioQuality === 'HI_RES_LOSSLESS' ? 9999 : track.audioQuality === 'HIGH' ? 320 : 96,
+            bitRate: BITRATE_BY_QUALITY[track.audioQuality] ?? BITRATE_BY_QUALITY.LOW,
             path: `${artistName}/${albumTitle}/${track.title ?? 'track'}.flac`,
             isVideo: false,
             type: 'music',
