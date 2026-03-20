@@ -24,6 +24,7 @@ export default [
                 ...globals.browser,
                 ...globals.node,
                 Neutralino: 'readonly',
+                Bun: 'readonly',
             },
         },
         rules: {

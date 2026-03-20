@@ -25,14 +25,26 @@ COPY . .
 # Build the project (Bun is now available for "bun x neu build")
 RUN bun run build
 
-# Serve with nginx
+# Serve with nginx + bundled Subsonic API (Bun)
 FROM nginx:1.28.2-alpine
 
+# Copy the built frontend
 COPY --from=builder /app/dist /usr/share/nginx/html
-
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose the nginx port
-EXPOSE 4173
+# Bundle the Subsonic API server files
+COPY --from=builder /app/server /app/server
 
-CMD ["nginx", "-g", "daemon off;"]
+# Copy the Bun binary from the builder so the Subsonic server can run
+COPY --from=builder /usr/local/bin/bun /usr/local/bin/bun
+
+# Entrypoint that starts both the Subsonic server and nginx
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# Web UI port
+EXPOSE 4173
+# Subsonic API port
+EXPOSE 4533
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
