@@ -55,8 +55,6 @@ jobs:
                   build-args: |
                       AUTH_ENABLED=${{ secrets.AUTH_ENABLED }}
                       AUTH_SECRET=${{ secrets.AUTH_SECRET }}
-                      APPWRITE_ENDPOINT=${{ secrets.APPWRITE_ENDPOINT }}
-                      APPWRITE_PROJECT_ID=${{ secrets.APPWRITE_PROJECT_ID }}
                       POCKETBASE_URL=${{ secrets.POCKETBASE_URL }}
                       SESSION_MAX_AGE=${{ secrets.SESSION_MAX_AGE }}
                   cache-from: type=gha
