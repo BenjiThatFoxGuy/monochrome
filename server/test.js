@@ -113,7 +113,9 @@ console.log('\n--- Auth Token (MD5) ---');
     const { createHash } = await import('node:crypto');
     const password = 'sesame';
     const salt = 'c19b2d';
-    const token = createHash('md5').update(password + salt).digest('hex');
+    const token = createHash('md5')
+        .update(password + salt)
+        .digest('hex');
     // Known Subsonic test vector from the spec
     assert('token calculation matches spec', token === '26719a1196d2a940705a59634eb18eab');
 }

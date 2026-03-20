@@ -36,12 +36,12 @@ The Subsonic API is now available at **http://localhost:4533/rest/**.
 All settings are controlled via environment variables (`.env` file or shell
 exports).
 
-| Variable                    | Default   | Description |
-|-----------------------------|-----------|-------------|
-| `SUBSONIC_PORT`             | `4533`    | Host port the API listens on |
-| `SUBSONIC_USER`             | `admin`   | Subsonic username |
-| `SUBSONIC_PASS`             | `admin`   | Subsonic password |
-| `MONOCHROME_API_INSTANCES`  | *(built-in defaults)* | Comma-separated list of Monochrome API base URLs |
+| Variable                   | Default               | Description                                      |
+| -------------------------- | --------------------- | ------------------------------------------------ |
+| `SUBSONIC_PORT`            | `4533`                | Host port the API listens on                     |
+| `SUBSONIC_USER`            | `admin`               | Subsonic username                                |
+| `SUBSONIC_PASS`            | `admin`               | Subsonic password                                |
+| `MONOCHROME_API_INSTANCES` | _(built-in defaults)_ | Comma-separated list of Monochrome API base URLs |
 
 > **Important:** Change the default username and password before exposing the
 > service to the internet.
@@ -63,38 +63,38 @@ docker compose --profile subsonic --profile pocketbase up -d
 
 Point your Subsonic client at:
 
-| Field    | Value |
-|----------|-------|
-| Server   | `http://<your-host>:4533` |
-| Username | *(value of `SUBSONIC_USER`)* |
-| Password | *(value of `SUBSONIC_PASS`)* |
+| Field    | Value                        |
+| -------- | ---------------------------- |
+| Server   | `http://<your-host>:4533`    |
+| Username | _(value of `SUBSONIC_USER`)_ |
+| Password | _(value of `SUBSONIC_PASS`)_ |
 
 ## Supported Endpoints
 
-| Endpoint           | Notes |
-|--------------------|-------|
-| `ping`             | Connectivity check |
-| `getLicense`       | Always returns valid |
-| `getMusicFolders`  | Returns a single virtual "Monochrome / TIDAL" folder |
-| `getIndexes`       | Returns an empty index (use search) |
-| `getArtists`       | Returns an empty index (use search) |
-| `getMusicDirectory`| Resolves `artist-{id}` and `album-{id}` directories |
-| `getArtist`        | Full artist info with album list |
-| `getArtistInfo2`   | Stub (returns empty info) |
-| `getAlbum`         | Album with full track list |
-| `getSong`          | Single track metadata |
-| `search2` / `search3` | Search tracks, albums, artists |
-| `getAlbumList2`    | Random album list |
-| `getRandomSongs`   | Random songs via search |
-| `stream`           | Proxy audio stream to the client |
-| `download`         | Same as `stream` |
-| `getCoverArt`      | Proxy cover art from TIDAL CDN |
-| `getPlaylist`      | Retrieve a TIDAL/Monochrome playlist by ID |
-| `getPlaylists`     | Returns empty list (no user session) |
-| `scrobble`         | Accepted (no-op) |
-| `getUser`          | Returns configured user info |
-| `star` / `unstar`  | Accepted (no-op) |
-| `setRating`        | Accepted (no-op) |
+| Endpoint              | Notes                                                |
+| --------------------- | ---------------------------------------------------- |
+| `ping`                | Connectivity check                                   |
+| `getLicense`          | Always returns valid                                 |
+| `getMusicFolders`     | Returns a single virtual "Monochrome / TIDAL" folder |
+| `getIndexes`          | Returns an empty index (use search)                  |
+| `getArtists`          | Returns an empty index (use search)                  |
+| `getMusicDirectory`   | Resolves `artist-{id}` and `album-{id}` directories  |
+| `getArtist`           | Full artist info with album list                     |
+| `getArtistInfo2`      | Stub (returns empty info)                            |
+| `getAlbum`            | Album with full track list                           |
+| `getSong`             | Single track metadata                                |
+| `search2` / `search3` | Search tracks, albums, artists                       |
+| `getAlbumList2`       | Random album list                                    |
+| `getRandomSongs`      | Random songs via search                              |
+| `stream`              | Proxy audio stream to the client                     |
+| `download`            | Same as `stream`                                     |
+| `getCoverArt`         | Proxy cover art from TIDAL CDN                       |
+| `getPlaylist`         | Retrieve a TIDAL/Monochrome playlist by ID           |
+| `getPlaylists`        | Returns empty list (no user session)                 |
+| `scrobble`            | Accepted (no-op)                                     |
+| `getUser`             | Returns configured user info                         |
+| `star` / `unstar`     | Accepted (no-op)                                     |
+| `setRating`           | Accepted (no-op)                                     |
 
 ## Limitations
 
@@ -105,9 +105,9 @@ Point your Subsonic client at:
   API provides (FLAC/MPEG-DASH). Some clients may require transcoding.
 - **Transcoding**: No server-side transcoding is performed. The `maxBitRate`
   parameter maps to a Monochrome quality level:
-  - `0` or unset → `HI_RES_LOSSLESS`
-  - `320` / `192` → `HIGH`
-  - `96` / `64` → `LOW`
+    - `0` or unset → `HI_RES_LOSSLESS`
+    - `320` / `192` → `HIGH`
+    - `96` / `64` → `LOW`
 - **Playlist management**: Creating/editing playlists via the Subsonic API is
   not persisted.
 

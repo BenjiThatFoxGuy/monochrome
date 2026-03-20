@@ -18,9 +18,7 @@ const COVER_ART_BASE = 'https://resources.tidal.com/images';
 export class MonochromeApiClient {
     constructor(instances) {
         this.instances =
-            instances && instances.length > 0
-                ? instances.filter(Boolean).map((u) => u.trim())
-                : DEFAULT_INSTANCES;
+            instances && instances.length > 0 ? instances.filter(Boolean).map((u) => u.trim()) : DEFAULT_INSTANCES;
 
         /** Simple in-memory cache keyed by "{namespace}:{key}" */
         this.cache = new Map();

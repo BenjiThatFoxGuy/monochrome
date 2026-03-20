@@ -19,7 +19,9 @@ const SUBSONIC_USER = process.env.SUBSONIC_USER ?? 'admin';
 const SUBSONIC_PASS = process.env.SUBSONIC_PASS ?? 'admin';
 
 const MONOCHROME_API_INSTANCES = process.env.MONOCHROME_API_INSTANCES
-    ? process.env.MONOCHROME_API_INSTANCES.split(',').map((s) => s.trim()).filter(Boolean)
+    ? process.env.MONOCHROME_API_INSTANCES.split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
     : [];
 
 const handler = new SubsonicHandler({
@@ -43,4 +45,6 @@ const server = Bun.serve({
 
 console.log(`Monochrome Subsonic API listening on http://0.0.0.0:${PORT}`);
 console.log(`  Username : ${SUBSONIC_USER}`);
-console.log(`  API instances: ${MONOCHROME_API_INSTANCES.length > 0 ? MONOCHROME_API_INSTANCES.join(', ') : '(using defaults)'}`);
+console.log(
+    `  API instances: ${MONOCHROME_API_INSTANCES.length > 0 ? MONOCHROME_API_INSTANCES.join(', ') : '(using defaults)'}`
+);

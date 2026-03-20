@@ -13,19 +13,75 @@ class MockApiClient {
     async searchTracks() {
         return {
             items: [
-                { id: '101', title: 'Test Song', duration: 240, audioQuality: 'HI_RES_LOSSLESS', artist: { id: '1', name: 'Artist A' }, album: { id: '10', title: 'Album X', cover: 'ab12cd34-ef56-7890-abcd-ef1234567890', releaseDate: '2023-01-01' }, trackNumber: 1 },
+                {
+                    id: '101',
+                    title: 'Test Song',
+                    duration: 240,
+                    audioQuality: 'HI_RES_LOSSLESS',
+                    artist: { id: '1', name: 'Artist A' },
+                    album: {
+                        id: '10',
+                        title: 'Album X',
+                        cover: 'ab12cd34-ef56-7890-abcd-ef1234567890',
+                        releaseDate: '2023-01-01',
+                    },
+                    trackNumber: 1,
+                },
             ],
             totalNumberOfItems: 1,
         };
     }
-    async searchArtists() { return { items: [{ id: '1', name: 'Artist A' }], totalNumberOfItems: 1 }; }
-    async searchAlbums() { return { items: [{ id: '10', title: 'Album X', artist: { id: '1', name: 'Artist A' }, cover: 'ab12', releaseDate: '2023-01-01' }], totalNumberOfItems: 1 }; }
-    async getAlbum(id) { return { album: { id, title: 'Album X', artist: { id: '1', name: 'Artist A' }, cover: 'ab12', numberOfTracks: 1, releaseDate: '2023-01-01' }, tracks: [] }; }
-    async getArtist(id) { return { artist: { id, name: 'Artist A' }, albums: [] }; }
-    async getTrackMetadata(id) { return { id, title: 'Test Song', duration: 240, artist: { id: '1', name: 'Artist A' }, album: { id: '10', title: 'Album X', cover: 'ab12' } }; }
-    async getStreamUrl() { return 'https://example.com/stream.flac'; }
-    async getPlaylist(id) { return { playlist: { uuid: id, title: 'Faves', description: '' }, tracks: [] }; }
-    static coverArtUrl(imageId, size) { return `https://resources.tidal.com/images/${imageId.replace(/-/g,'/')}/${size}x${size}.jpg`; }
+    async searchArtists() {
+        return { items: [{ id: '1', name: 'Artist A' }], totalNumberOfItems: 1 };
+    }
+    async searchAlbums() {
+        return {
+            items: [
+                {
+                    id: '10',
+                    title: 'Album X',
+                    artist: { id: '1', name: 'Artist A' },
+                    cover: 'ab12',
+                    releaseDate: '2023-01-01',
+                },
+            ],
+            totalNumberOfItems: 1,
+        };
+    }
+    async getAlbum(id) {
+        return {
+            album: {
+                id,
+                title: 'Album X',
+                artist: { id: '1', name: 'Artist A' },
+                cover: 'ab12',
+                numberOfTracks: 1,
+                releaseDate: '2023-01-01',
+            },
+            tracks: [],
+        };
+    }
+    async getArtist(id) {
+        return { artist: { id, name: 'Artist A' }, albums: [] };
+    }
+    async getTrackMetadata(id) {
+        return {
+            id,
+            title: 'Test Song',
+            duration: 240,
+            artist: { id: '1', name: 'Artist A' },
+            album: { id: '10', title: 'Album X', cover: 'ab12' },
+        };
+    }
+    async getStreamUrl() {
+        return 'https://example.com/stream.flac';
+    }
+    async getPlaylist(id) {
+        return { playlist: { uuid: id, title: 'Faves', description: '' }, tracks: [] };
+    }
+    static coverArtUrl(imageId, size) {
+        return `https://resources.tidal.com/images/${imageId.replace(/-/g, '/')}/${size}x${size}.jpg`;
+    }
 }
 
 // ---- Patch MonochromeApiClient in subsonic.js ----
@@ -40,14 +96,20 @@ import { createHash } from 'node:crypto';
 const SUBSONIC_API_VERSION = '1.16.1';
 
 function escapeXml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
 }
 
 function renderElement(tag, value, indent = '') {
     if (value === null || value === undefined) return '';
     const next = indent + '  ';
     if (typeof value !== 'object') return `${indent}<${tag}>${escapeXml(String(value))}</${tag}>\n`;
-    const attrs = [], children = {};
+    const attrs = [],
+        children = {};
     for (const [k, v] of Object.entries(value)) {
         if (v === null || v === undefined) continue;
         if (Array.isArray(v) || typeof v === 'object') children[k] = v;
@@ -60,18 +122,20 @@ function renderElement(tag, value, indent = '') {
 
 function toXml(obj, indent = '') {
     if (!obj || typeof obj !== 'object') return escapeXml(String(obj ?? ''));
-    if (Array.isArray(obj)) return obj.map(i => toXml(i, indent)).join('');
+    if (Array.isArray(obj)) return obj.map((i) => toXml(i, indent)).join('');
     let out = '';
     for (const [key, value] of Object.entries(obj)) {
         if (value === undefined || value === null) continue;
-        if (Array.isArray(value)) { for (const item of value) out += renderElement(key, item, indent); }
-        else out += renderElement(key, value, indent);
+        if (Array.isArray(value)) {
+            for (const item of value) out += renderElement(key, item, indent);
+        } else out += renderElement(key, value, indent);
     }
     return out;
 }
 
 function respond(paramsOrFormat, data) {
-    const format = (typeof paramsOrFormat === 'string' ? paramsOrFormat : paramsOrFormat?.f) === 'json' ? 'json' : 'xml';
+    const format =
+        (typeof paramsOrFormat === 'string' ? paramsOrFormat : paramsOrFormat?.f) === 'json' ? 'json' : 'xml';
     const hasError = 'error' in data;
     const status = hasError ? 'failed' : 'ok';
     if (format === 'json') {
@@ -82,10 +146,16 @@ function respond(paramsOrFormat, data) {
 }
 
 // ---- Test runner ----
-let passed = 0, failed = 0;
+let passed = 0,
+    failed = 0;
 function assert(label, cond) {
-    if (cond) { console.log(`  ✓ ${label}`); passed++; }
-    else { console.error(`  ✗ ${label}`); failed++; }
+    if (cond) {
+        console.log(`  ✓ ${label}`);
+        passed++;
+    } else {
+        console.error(`  ✗ ${label}`);
+        failed++;
+    }
 }
 
 // ---- Test suites ----
@@ -125,7 +195,9 @@ console.log('\n--- Auth: MD5 token ---');
 {
     const password = 'sesame';
     const salt = 'c19b2d';
-    const token = createHash('md5').update(password + salt).digest('hex');
+    const token = createHash('md5')
+        .update(password + salt)
+        .digest('hex');
     assert('MD5 token correct', token === '26719a1196d2a940705a59634eb18eab');
 }
 
@@ -140,7 +212,15 @@ console.log('\n--- Auth: hex-encoded password ---');
 
 console.log('\n--- Song builder ---');
 {
-    const track = { id: '101', title: 'Test Song', duration: 240, audioQuality: 'HI_RES_LOSSLESS', artist: { id: '1', name: 'Artist A' }, album: { id: '10', title: 'Album X', cover: 'ab12cd34-ef56-7890-abcd-ef1234567890', releaseDate: '2023-01-01' }, trackNumber: 1 };
+    const track = {
+        id: '101',
+        title: 'Test Song',
+        duration: 240,
+        audioQuality: 'HI_RES_LOSSLESS',
+        artist: { id: '1', name: 'Artist A' },
+        album: { id: '10', title: 'Album X', cover: 'ab12cd34-ef56-7890-abcd-ef1234567890', releaseDate: '2023-01-01' },
+        trackNumber: 1,
+    };
 
     function buildSong(track) {
         const artistName = track.artist?.name ?? '';
@@ -150,15 +230,24 @@ console.log('\n--- Song builder ---');
         const m = String(track.album?.releaseDate ?? '').match(/(\d{4})/);
         const year = m ? parseInt(m[1], 10) : undefined;
         return {
-            id: String(track.id), parent: albumId ? `album-${albumId}` : undefined,
-            title: track.title, isDir: false, album: albumTitle || undefined,
-            albumId: albumId ? `album-${albumId}` : undefined, artist: artistName || undefined,
+            id: String(track.id),
+            parent: albumId ? `album-${albumId}` : undefined,
+            title: track.title,
+            isDir: false,
+            album: albumTitle || undefined,
+            albumId: albumId ? `album-${albumId}` : undefined,
+            artist: artistName || undefined,
             artistId: track.artist?.id ? `artist-${track.artist.id}` : undefined,
-            track: track.trackNumber, year, coverArt: imageId ?? (albumId ? `album-${albumId}` : undefined),
-            contentType: 'audio/flac', suffix: 'flac', duration: Math.round(track.duration ?? 0),
+            track: track.trackNumber,
+            year,
+            coverArt: imageId ?? (albumId ? `album-${albumId}` : undefined),
+            contentType: 'audio/flac',
+            suffix: 'flac',
+            duration: Math.round(track.duration ?? 0),
             bitRate: track.audioQuality === 'HI_RES_LOSSLESS' ? 9999 : 320,
             path: `${artistName}/${albumTitle}/${track.title}.flac`,
-            isVideo: false, type: 'music',
+            isVideo: false,
+            type: 'music',
         };
     }
 
