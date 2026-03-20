@@ -26,10 +26,10 @@ or the [OpenSubsonic](https://opensubsonic.netlify.app/) extension should work, 
 Images are automatically built and published to GitHub Container Registry on
 every push to `main` and on every release:
 
-| Image | Description |
-|-------|-------------|
-| `ghcr.io/benjithatfoxguy/monochrome:latest` | Main image — web UI **+ bundled Subsonic API** |
-| `ghcr.io/benjithatfoxguy/monochrome-subsonic:latest` | Standalone Subsonic API only (no web UI) |
+| Image                                                | Description                                    |
+| ---------------------------------------------------- | ---------------------------------------------- |
+| `ghcr.io/benjithatfoxguy/monochrome:latest`          | Main image — web UI **+ bundled Subsonic API** |
+| `ghcr.io/benjithatfoxguy/monochrome-subsonic:latest` | Standalone Subsonic API only (no web UI)       |
 
 ## Quick Start
 
@@ -39,6 +39,7 @@ docker compose up -d
 ```
 
 The Subsonic API is available at:
+
 - **Direct:** `http://localhost:4533/rest/`
 - **Via nginx proxy:** `http://localhost:3000/rest/` (same port as the web UI)
 
@@ -47,7 +48,7 @@ The Subsonic API is available at:
 All settings are controlled via environment variables (`.env` file or shell exports).
 
 | Variable                   | Default               | Description                                      |
-|----------------------------|-----------------------|--------------------------------------------------|
+| -------------------------- | --------------------- | ------------------------------------------------ |
 | `SUBSONIC_PORT`            | `4533`                | Internal port the Subsonic server listens on     |
 | `SUBSONIC_USER`            | `admin`               | Subsonic username                                |
 | `SUBSONIC_PASS`            | `admin`               | Subsonic password                                |
@@ -73,11 +74,11 @@ docker compose --profile pocketbase up -d
 
 Point your Subsonic client at:
 
-| Field    | Value                        |
-|----------|------------------------------|
+| Field    | Value                                                                             |
+| -------- | --------------------------------------------------------------------------------- |
 | Server   | `http://<your-host>:3000` (via nginx proxy) or `http://<your-host>:4533` (direct) |
-| Username | _(value of `SUBSONIC_USER`)_ |
-| Password | _(value of `SUBSONIC_PASS`)_ |
+| Username | _(value of `SUBSONIC_USER`)_                                                      |
+| Password | _(value of `SUBSONIC_PASS`)_                                                      |
 
 ## Standalone Subsonic-Only Container
 
@@ -101,7 +102,7 @@ docker compose --profile subsonic up -d
 ## Supported Endpoints
 
 | Endpoint              | Notes                                                |
-|-----------------------|------------------------------------------------------|
+| --------------------- | ---------------------------------------------------- |
 | `ping`                | Connectivity check                                   |
 | `getLicense`          | Always returns valid                                 |
 | `getMusicFolders`     | Returns a single virtual "Monochrome / TIDAL" folder |
