@@ -10,7 +10,7 @@
 > **This is a fork of [monochrome-music/monochrome](https://github.com/monochrome-music/monochrome).**
 >
 > At this moment, this fork's primary purpose is to provide **prebuilt Docker images** for easy self-hosting.
-> Changes to the codebase may be introduced in the future, in which case the project **will** be renamed and/or moved to a separate repository.
+> Changes to the codebase may be introduced in the future, in which case this fork **will** be renamed and/or moved to a separate repository.
 
 <p align="center">
   <strong>An open-source, privacy-respecting, ad-free music app.</strong>
