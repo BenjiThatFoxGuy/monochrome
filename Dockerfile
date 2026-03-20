@@ -10,8 +10,6 @@ RUN apk add --no-cache python3 make g++ && ln -sf python3 /usr/bin/python
 # Accept build arguments for environment variables
 ARG AUTH_ENABLED
 ARG AUTH_SECRET
-ARG APPWRITE_ENDPOINT
-ARG APPWRITE_PROJECT_ID
 ARG POCKETBASE_URL
 ARG SESSION_MAX_AGE
 

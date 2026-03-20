@@ -116,7 +116,6 @@ Our Recommended way to use monochrome is through our official instance:
 
 **[monochrome.tf](https://monochrome.tf)** / **[monochrome.samidy.com](https://monochrome.samidy.com)**
 
-
 For alternative instances, check [INSTANCES.md](INSTANCES.md).
 
 ---
@@ -288,4 +287,3 @@ We welcome contributions from the community! Please see our [Contributing Guide]
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=monochrome-music/monochrome&type=date&logscale&legend=top-left" />
  </picture>
 </a>
-
